@@ -4,7 +4,7 @@ import { OrbitControls, useGLTF, Environment } from '@react-three/drei';
 
 function Model(props) {
     // Load the GLTF model including nodes to find the camera
-    const { nodes, scene } = useGLTF('matheus_3d.glb');
+    const { nodes, scene } = useGLTF('public/matheus_3d.glb');
     const meshRef = useRef();
 
     // Find the camera node (trying common names or fallback to first camera found)
