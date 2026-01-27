@@ -1,21 +1,31 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Profile3D from './Profile3D';
 import { Window, WindowHeader, WindowContent, Button } from 'react95';
 import styled from 'styled-components';
 import Draggable from 'react-draggable';
 
 const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column; // Keeping column for initial mobile-friendly layout
-  gap: 2rem;
   width: 100%;
-  max-width: 800px; // Constraint to keep things centered initially
+  max-width: 1200px; // Wider max-width for desktop
   margin: 0 auto;
+  position: relative;
+  
+  // Mobile Layout (Default)
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   align-items: center;
-  position: relative; // Context for absolute if needed, but we rely on transforms
+  padding-bottom: 50px;
+
+  // Desktop Layout
+  @media (min-width: 769px) {
+    display: block; // Allow absolute positioning children relative to this
+    height: 80vh; // Fixed height area for "desktop" feel
+    padding-top: 20px;
+  }
 `;
 
-const DraggableWindow = ({ id, title, children, onClose, onFocus, style, windowStyle, startPosition }) => {
+const DraggableWindow = ({ id, title, children, onClose, onFocus, style, windowStyle, defaultPosition, isMobile }) => {
     const nodeRef = useRef(null);
 
     return (
@@ -23,9 +33,10 @@ const DraggableWindow = ({ id, title, children, onClose, onFocus, style, windowS
             nodeRef={nodeRef}
             handle=".window-header"
             onMouseDown={() => onFocus(id)}
-            defaultPosition={startPosition || { x: 0, y: 0 }}
+            defaultPosition={defaultPosition}
+            disabled={isMobile} // Optional: Disable dragging on mobile if preferred? User asked for "responsive... maintaining disposition". Dragging on mobile is often annoying. Let's keep it enabled but stacked? User said "Mobile... mantendo a disposição uma em seguida da outra". Stacking implies static. Let's ENABLE dragging but start stacked. Actually, if I use position:relative on mobile, dragging works via transform.
         >
-            <div ref={nodeRef} style={{ ...style, zIndex: style.zIndex, position: 'relative' }}>
+            <div ref={nodeRef} style={{ ...style, zIndex: style.zIndex }}>
                 <Window style={{ width: '100%', maxWidth: '600px', ...windowStyle }} className="window">
                     <WindowHeader className="window-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'grab' }}>
                         <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -44,35 +55,64 @@ const DraggableWindow = ({ id, title, children, onClose, onFocus, style, windowS
     );
 };
 
+const getRandomPosition = () => {
+    // Random position between 5% and 40% for left, 20px and 150px for top
+    const top = Math.floor(Math.random() * (150 - 20 + 1)) + 20;
+    const left = Math.floor(Math.random() * (40 - 5 + 1)) + 5;
+    return { top, left };
+};
+
 const Home = () => {
-    const [windows, setWindows] = useState({
-        model: {
-            id: 'model',
-            title: 'viewer_3d.exe',
-            isOpen: true,
-            zIndex: 1,
-            content: <Profile3D />
-        },
-        about: {
-            id: 'about',
-            title: 'sobre_mim.txt',
-            isOpen: true,
-            zIndex: 0,
-            content: (
-                <div style={{ padding: '1rem' }}>
-                    <h3 style={{ marginTop: 0 }}>Sobre mim</h3>
-                    <p>
-                        [Escreva aqui sobre você...]
-                    </p>
-                    <br />
-                    <p>
-                        Olá! Sou Matheus José, um desenvolvedor apaixonado por criar experiências digitais únicas.
-                        Este portfólio é uma janela para o meu mundo, misturando nostalgia e tecnologia moderna.
-                    </p>
-                </div>
-            )
-        }
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const [windows, setWindows] = useState(() => {
+        const pos1 = getRandomPosition();
+        const pos2 = getRandomPosition();
+
+        // Ensure they aren't too close? Simple random is fine for now as requested.
+        return {
+            model: {
+                id: 'model',
+                title: 'eu_3d',
+                isOpen: true,
+                zIndex: 1,
+                content: <Profile3D />,
+                desktopPosition: { top: `${pos1.top}px`, left: `${pos1.left}%` }
+            },
+            about: {
+                id: 'about',
+                title: 'sobre_mim',
+                isOpen: true,
+                zIndex: 0,
+                content: (
+                    <div style={{ padding: '1rem' }}>
+                        <h3 style={{ marginTop: 0 }}>Sobre mim</h3>
+                        <p>
+                            [Escreva aqui sobre você...]
+                        </p>
+                        <br />
+                        <p>
+                            Olá! Sou Matheus José, um desenvolvedor apaixonado por criar experiências digitais únicas.
+                            Este portfólio é uma janela para o meu mundo, misturando nostalgia e tecnologia moderna.
+                        </p>
+                    </div>
+                ),
+                desktopPosition: { top: `${pos2.top + 50}px`, left: `${pos2.left + 20}%` } // Start second window slightly offset from random base or completely random? 
+                // Let's make second window completely random but broadly different range to avoid total overlap?
+                // Or just independent random. Let's do independent but slightly biased to right to fill screen.
+            }
+        };
     });
+
+    // Recalculate 'about' position to be independent random logic inside hook above was cleaner.
+    // Let's refine the useState initializer to be more explicit.
+
 
     const closeWindow = (id) => {
         setWindows(prev => ({
@@ -99,28 +139,40 @@ const Home = () => {
                     title={windows.model.title}
                     onClose={closeWindow}
                     onFocus={focusWindow}
-                    style={{ zIndex: windows.model.zIndex, marginBottom: '20px' }}
-                    windowStyle={{ width: '100%', maxWidth: '500px' }} // Slightly wider for 3D
+                    isMobile={isMobile}
+                    style={{
+                        zIndex: windows.model.zIndex,
+                        position: isMobile ? 'relative' : 'absolute',
+                        left: isMobile ? 0 : '5%',
+                        top: isMobile ? 0 : '20px',
+                    }}
+                    windowStyle={{ width: '100%', maxWidth: '500px' }}
                 >
                     {windows.model.content}
                 </DraggableWindow>
             )}
 
-            {/* Bio Window */}
+            {/* Bio Window - Overlapping on Desktop */}
             {windows.about.isOpen && (
                 <DraggableWindow
                     id="about"
                     title={windows.about.title}
                     onClose={closeWindow}
                     onFocus={focusWindow}
-                    style={{ zIndex: windows.about.zIndex }}
+                    isMobile={isMobile}
+                    style={{
+                        zIndex: windows.about.zIndex,
+                        position: isMobile ? 'relative' : 'absolute',
+                        left: isMobile ? 0 : '40%', // Offset horizontally for overlap
+                        top: isMobile ? 0 : '80px',  // Offset vertically for overlap
+                    }}
                 >
                     {windows.about.content}
                 </DraggableWindow>
             )}
 
             {!windows.model.isOpen && !windows.about.isOpen && (
-                <div style={{ textAlign: 'center', marginTop: '20px', color: 'gray' }}>
+                <div style={{ textAlign: 'center', marginTop: '100px', color: 'gray', width: '100%' }}>
                     <p>Todas as janelas foram fechadas.</p>
                     <Button onClick={() => window.location.reload()}>Reiniciar Sistema</Button>
                 </div>
