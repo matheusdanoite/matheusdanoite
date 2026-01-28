@@ -73,10 +73,15 @@ const Home = () => {
     }, []);
 
     const [windows, setWindows] = useState(() => {
-        const pos1 = getRandomPosition();
-        const pos2 = getRandomPosition();
+        // Model Window (max 500px width in 800px container ≈ 62.5% width)
+        const pos1 = getRandomPosition(35);
 
-        // Ensure they aren't too close? Simple random is fine for now as requested.
+        // About Window (max 600px width in 800px container ≈ 75% width)
+        const pos2 = getRandomPosition(25);
+
+        // Music Window (Standard width ~300-400px? Let's say 40%)
+        const pos3 = getRandomPosition(50);
+
         return {
             model: {
                 id: 'model',
@@ -104,9 +109,15 @@ const Home = () => {
                         </p>
                     </div>
                 ),
-                desktopPosition: { top: `${pos2.top + 50}px`, left: `${pos2.left + 20}%` } // Start second window slightly offset from random base or completely random? 
-                // Let's make second window completely random but broadly different range to avoid total overlap?
-                // Or just independent random. Let's do independent but slightly biased to right to fill screen.
+                desktopPosition: { top: `${pos2.top + 60}px`, left: `${pos2.left + 5}%` }
+            },
+            music: {
+                id: 'music',
+                title: 'last_fm.exe',
+                isOpen: true,
+                zIndex: 2,
+                content: <MusicWindow />,
+                desktopPosition: { top: `${pos3.top + 100}px`, left: `${pos3.left + 10}%` }
             }
         };
     });
