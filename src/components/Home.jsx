@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Profile3D from './Profile3D';
+import MusicWindow from './MusicWindow';
 import { Window, WindowHeader, WindowContent, Button } from 'react95';
 import styled from 'styled-components';
 import Draggable from 'react-draggable';
@@ -171,7 +172,27 @@ const Home = () => {
                 </DraggableWindow>
             )}
 
-            {!windows.model.isOpen && !windows.about.isOpen && (
+            {/* Music Window */}
+            {windows.music.isOpen && (
+                <DraggableWindow
+                    id="music"
+                    title={windows.music.title}
+                    onClose={closeWindow}
+                    onFocus={focusWindow}
+                    isMobile={isMobile}
+                    style={{
+                        zIndex: windows.music.zIndex,
+                        position: isMobile ? 'relative' : 'absolute',
+                        left: isMobile ? 0 : windows.music.desktopPosition.left,
+                        top: isMobile ? 0 : windows.music.desktopPosition.top,
+                    }}
+                    windowStyle={{ width: '100%', maxWidth: '350px' }}
+                >
+                    {windows.music.content}
+                </DraggableWindow>
+            )}
+
+            {!windows.model.isOpen && !windows.about.isOpen && !windows.music.isOpen && (
                 <div style={{ textAlign: 'center', marginTop: '100px', color: 'gray', width: '100%' }}>
                     <p>Todas as janelas foram fechadas.</p>
                     <Button onClick={() => window.location.reload()}>Reiniciar Sistema</Button>
