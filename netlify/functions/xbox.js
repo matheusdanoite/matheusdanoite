@@ -13,11 +13,10 @@ exports.handler = async function (event, context) {
         }
 
         // Fazer chamadas separadas para facilitar debug
+        // Baseado na documentação fornecida: "curl --header 'X-Authorization: API_KEY' https://xbl.io/api/v2/account"
         const headers = {
             'X-Authorization': apiKey,
-            'X-Contract': '100',
-            'Accept': 'application/json',
-            'User-Agent': 'NetlifyFunction/1.0'
+            'Accept': 'application/json'
         };
 
         // 1. Fetch Account
