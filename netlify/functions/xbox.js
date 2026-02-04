@@ -47,7 +47,7 @@ exports.handler = async function (event, context) {
         console.log("Fetching History data...");
         let historyData = {};
         try {
-            const historyResponse = await fetch('https://xbl.io/api/v2/player/title/history', { headers });
+            const historyResponse = await fetch('https://xbl.io/api/v2/activity/history', { headers });
             if (historyResponse.ok) {
                 historyData = await historyResponse.json();
                 console.log("History data received.");

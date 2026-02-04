@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Divider, ProgressBar } from 'react95';
+import { Divider, ProgressBar, Anchor } from 'react95';
 
 const ProfileContainer = styled.div`
   display: flex;
@@ -186,6 +186,12 @@ const XboxWindow = () => {
                             </LastPlayedContainer>
                         </>
                     )}
+
+                    <div style={{ textAlign: 'center', marginTop: '15px', fontSize: '0.8rem', paddingBottom: '10px' }}>
+                        <Anchor href="https://www.xbox.com/pt-BR/play/user/matheusdobairro" target="_blank" style={{ textDecoration: 'none' }}>
+                            @matheusdobairro no Xbox
+                        </Anchor>
+                    </div>
                 </>
             )}
         </div>
