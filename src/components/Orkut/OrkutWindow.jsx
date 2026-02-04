@@ -99,152 +99,151 @@ const OrkutWindow = () => {
             default:
                 return (
                     <>
-                        <>
-                            <WhiteBox>
-                                <BoxTitle>{profileData ? profileData.name : 'Carregando...'}</BoxTitle>
-                                <div style={{ padding: '20px' }}>
-                                    {profileData && (
-                                        <>
-                                            <ProfilePicture src={resolveOrkutImage(profileData.photo)} alt="Profile" />
-                                            <div style={{ marginTop: '10px' }}>
-                                                {renderProfileSection('Social', [
-                                                    { label: "relacionamento", value: profileData.relationship },
-                                                    { label: "aniversário", value: profileData.birthday },
-                                                    { label: "local", value: profileData.location },
-                                                    ...(profileData.social || [])
-                                                ])}
-                                                {renderProfileSection('Profissional', profileData.professional)}
-                                                {renderProfileSection('Pessoal', profileData.personal)}
-                                                {renderProfileSection('Detalhes', profileData.details)}
-                                            </div>
-                                        </>
-                                    )}
-                                    <div style={{ marginTop: '25px' }}>
-                                        <div style={{ color: '#5778A1', fontWeight: 'bold', borderBottom: '1px solid #BCCDE9', marginBottom: '12px', paddingBottom: '4px', fontSize: '12px' }}>
-                                            Sobre {profileData && profileData.name ? profileData.name.split(' ')[0] : 'mim'}
+                        <WhiteBox>
+                            <BoxTitle>{profileData ? profileData.name : 'Carregando...'}</BoxTitle>
+                            <div style={{ padding: '20px' }}>
+                                {profileData && (
+                                    <>
+                                        <ProfilePicture src={resolveOrkutImage(profileData.photo)} alt="Profile" />
+                                        <div style={{ marginTop: '10px' }}>
+                                            {renderProfileSection('Social', [
+                                                { label: "relacionamento", value: profileData.relationship },
+                                                { label: "aniversário", value: profileData.birthday },
+                                                { label: "local", value: profileData.location },
+                                                ...(profileData.social || [])
+                                            ])}
+                                            {renderProfileSection('Profissional', profileData.professional)}
+                                            {renderProfileSection('Pessoal', profileData.personal)}
+                                            {renderProfileSection('Detalhes', profileData.details)}
                                         </div>
-                                        <div style={{ fontSize: '13px', lineHeight: '1.5', color: '#444', textAlign: 'justify' }}>
-                                            {profileData ? profileData.aboutMe : 'Carregando...'}
-                                        </div>
+                                    </>
+                                )}
+                                <div style={{ marginTop: '25px' }}>
+                                    <div style={{ color: '#5778A1', fontWeight: 'bold', borderBottom: '1px solid #BCCDE9', marginBottom: '12px', paddingBottom: '4px', fontSize: '12px' }}>
+                                        Sobre {profileData && profileData.name ? profileData.name.split(' ')[0] : 'mim'}
+                                    </div>
+                                    <div style={{ fontSize: '13px', lineHeight: '1.5', color: '#444', textAlign: 'justify' }}>
+                                        {profileData ? profileData.aboutMe : 'Carregando...'}
                                     </div>
                                 </div>
-                            </WhiteBox>
-                        </>
-                        );
+                            </div>
+                        </WhiteBox>
+                    </>
+                );
         }
     };
 
     const FriendsBox = () => (
-                        <WhiteBox style={{ display: 'flex', flexDirection: 'column', height: '400px' }}>
-                            <BoxTitle>amigos ({ORKUT_FRIENDS.length})</BoxTitle>
-                            <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '10px 5px' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '33.33% 33.33% 33.33%', gap: '10px 0' }}>
-                                    {ORKUT_FRIENDS.map(friend => (
-                                        <div key={friend.id} style={{ textAlign: 'center', minWidth: 0 }}>
-                                            <img
-                                                src={resolveOrkutImage(friend.photo)}
-                                                alt={friend.name}
-                                                style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px', cursor: 'pointer', border: '1px solid #ddd' }}
-                                            />
-                                            <div style={{ fontSize: '11px', marginTop: '4px', color: '#06c', padding: '0 4px', lineHeight: '1.2', wordBreak: 'break-word' }}>
-                                                {friend.name}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+        <WhiteBox style={{ display: 'flex', flexDirection: 'column', height: '400px' }}>
+            <BoxTitle>amigos ({ORKUT_FRIENDS.length})</BoxTitle>
+            <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '10px 5px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '33.33% 33.33% 33.33%', gap: '10px 0' }}>
+                    {ORKUT_FRIENDS.map(friend => (
+                        <div key={friend.id} style={{ textAlign: 'center', minWidth: 0 }}>
+                            <img
+                                src={resolveOrkutImage(friend.photo)}
+                                alt={friend.name}
+                                style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px', cursor: 'pointer', border: '1px solid #ddd' }}
+                            />
+                            <div style={{ fontSize: '11px', marginTop: '4px', color: '#06c', padding: '0 4px', lineHeight: '1.2', wordBreak: 'break-word' }}>
+                                {friend.name}
                             </div>
-                        </WhiteBox>
-                        );
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </WhiteBox>
+    );
 
     const CommunitiesBox = () => (
-                        <WhiteBox style={{ display: 'flex', flexDirection: 'column', height: '400px' }}>
-                            <BoxTitle>comunidades ({ORKUT_COMMUNITIES.length})</BoxTitle>
-                            <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '10px 5px' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '33.33% 33.33% 33.33%', gap: '10px 0' }}>
-                                    {ORKUT_COMMUNITIES.map(comm => (
-                                        <div key={comm.id} style={{ textAlign: 'center', minWidth: 0 }}>
-                                            <img
-                                                src={resolveOrkutImage(comm.photo)}
-                                                alt={comm.name}
-                                                style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px', cursor: 'pointer', border: '1px solid #ddd' }}
-                                            />
-                                            <div style={{ fontSize: '11px', marginTop: '4px', color: '#06c', padding: '0 4px', lineHeight: '1.2', wordBreak: 'break-word' }}>
-                                                {comm.name}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+        <WhiteBox style={{ display: 'flex', flexDirection: 'column', height: '400px' }}>
+            <BoxTitle>comunidades ({ORKUT_COMMUNITIES.length})</BoxTitle>
+            <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '10px 5px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '33.33% 33.33% 33.33%', gap: '10px 0' }}>
+                    {ORKUT_COMMUNITIES.map(comm => (
+                        <div key={comm.id} style={{ textAlign: 'center', minWidth: 0 }}>
+                            <img
+                                src={resolveOrkutImage(comm.photo)}
+                                alt={comm.name}
+                                style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px', cursor: 'pointer', border: '1px solid #ddd' }}
+                            />
+                            <div style={{ fontSize: '11px', marginTop: '4px', color: '#06c', padding: '0 4px', lineHeight: '1.2', wordBreak: 'break-word' }}>
+                                {comm.name}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </WhiteBox>
+    );
+
+    return (
+        <OrkutContainer>
+            {/* Mobile Navigation Bar */}
+            {isMobile && (
+                <>
+                    <MobileTopBar onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                        <MobileProfilePhoto
+                            src={resolveOrkutImage('user_thumb_medium.jpg')}
+                            alt={profileData.name}
+                        />
+                        <MobileUserInfo>
+                            <MobileUserName>{profileData.name}</MobileUserName>
+                            <MobileActiveTab>{tabLabels[activeTab]}</MobileActiveTab>
+                        </MobileUserInfo>
+                        <MobileChevron $expanded={mobileMenuOpen}>▼</MobileChevron>
+                    </MobileTopBar>
+                    <MobileMenu $expanded={mobileMenuOpen}>
+                        <MobileNavItem $active={activeTab === 'perfil'} onClick={() => handleTabClick('perfil')}>perfil</MobileNavItem>
+                        <MobileNavItem $active={activeTab === 'atualizacoes'} onClick={() => handleTabClick('atualizacoes')}>atualizações</MobileNavItem>
+                        <MobileNavItem $active={activeTab === 'scraps'} onClick={() => handleTabClick('scraps')}>recados</MobileNavItem>
+                        <MobileNavItem $active={activeTab === 'depoimentos'} onClick={() => handleTabClick('depoimentos')}>depoimentos</MobileNavItem>
+                        <MobileNavItem $active={activeTab === 'topicos'} onClick={() => handleTabClick('topicos')}>tópicos</MobileNavItem>
+                        <MobileNavItem $active={activeTab === 'fotos'} onClick={() => handleTabClick('fotos')}>fotos</MobileNavItem>
+                    </MobileMenu>
+                </>
+            )}
+
+            <MainContainer>
+                {/* Desktop Sidebar - hidden on mobile */}
+                {!isMobile && (
+                    <LeftColumn>
+                        <WhiteBox style={{ padding: '15px' }}>
+                            <ProfilePicture src={resolveOrkutImage('user_thumb_medium.jpg')} alt="Matheus José" />
+                            <UserName>{profileData.name}</UserName>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '15px' }}>
+                                <NavLink onClick={() => handleTabClick('perfil')} active={activeTab === 'perfil'}>perfil</NavLink>
+                                <NavLink onClick={() => handleTabClick('atualizacoes')} active={activeTab === 'atualizacoes'}>atualizações</NavLink>
+                                <NavLink onClick={() => handleTabClick('scraps')} active={activeTab === 'scraps'}>recados</NavLink>
+                                <NavLink onClick={() => handleTabClick('depoimentos')} active={activeTab === 'depoimentos'}>depoimentos</NavLink>
+                                <NavLink onClick={() => handleTabClick('topicos')} active={activeTab === 'topicos'}>tópicos</NavLink>
+                                <NavLink onClick={() => handleTabClick('fotos')} active={activeTab === 'fotos'}>fotos</NavLink>
                             </div>
                         </WhiteBox>
-                        );
+                    </LeftColumn>
+                )}
 
-                        return (
-                        <OrkutContainer>
-                            {/* Mobile Navigation Bar */}
-                            {isMobile && (
-                                <>
-                                    <MobileTopBar onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                                        <MobileProfilePhoto
-                                            src={resolveOrkutImage('user_thumb_medium.jpg')}
-                                            alt={profileData.name}
-                                        />
-                                        <MobileUserInfo>
-                                            <MobileUserName>{profileData.name}</MobileUserName>
-                                            <MobileActiveTab>{tabLabels[activeTab]}</MobileActiveTab>
-                                        </MobileUserInfo>
-                                        <MobileChevron $expanded={mobileMenuOpen}>▼</MobileChevron>
-                                    </MobileTopBar>
-                                    <MobileMenu $expanded={mobileMenuOpen}>
-                                        <MobileNavItem $active={activeTab === 'perfil'} onClick={() => handleTabClick('perfil')}>perfil</MobileNavItem>
-                                        <MobileNavItem $active={activeTab === 'atualizacoes'} onClick={() => handleTabClick('atualizacoes')}>atualizações</MobileNavItem>
-                                        <MobileNavItem $active={activeTab === 'scraps'} onClick={() => handleTabClick('scraps')}>recados</MobileNavItem>
-                                        <MobileNavItem $active={activeTab === 'depoimentos'} onClick={() => handleTabClick('depoimentos')}>depoimentos</MobileNavItem>
-                                        <MobileNavItem $active={activeTab === 'topicos'} onClick={() => handleTabClick('topicos')}>tópicos</MobileNavItem>
-                                        <MobileNavItem $active={activeTab === 'fotos'} onClick={() => handleTabClick('fotos')}>fotos</MobileNavItem>
-                                    </MobileMenu>
-                                </>
-                            )}
+                <ContentColumn key={`${activeTab}-${refreshKey}`}>
+                    {renderActiveContent()}
 
-                            <MainContainer>
-                                {/* Desktop Sidebar - hidden on mobile */}
-                                {!isMobile && (
-                                    <LeftColumn>
-                                        <WhiteBox style={{ padding: '15px' }}>
-                                            <ProfilePicture src={resolveOrkutImage('user_thumb_medium.jpg')} alt="Matheus José" />
-                                            <UserName>{profileData.name}</UserName>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '15px' }}>
-                                                <NavLink onClick={() => handleTabClick('perfil')} active={activeTab === 'perfil'}>perfil</NavLink>
-                                                <NavLink onClick={() => handleTabClick('atualizacoes')} active={activeTab === 'atualizacoes'}>atualizações</NavLink>
-                                                <NavLink onClick={() => handleTabClick('scraps')} active={activeTab === 'scraps'}>recados</NavLink>
-                                                <NavLink onClick={() => handleTabClick('depoimentos')} active={activeTab === 'depoimentos'}>depoimentos</NavLink>
-                                                <NavLink onClick={() => handleTabClick('topicos')} active={activeTab === 'topicos'}>tópicos</NavLink>
-                                                <NavLink onClick={() => handleTabClick('fotos')} active={activeTab === 'fotos'}>fotos</NavLink>
-                                            </div>
-                                        </WhiteBox>
-                                    </LeftColumn>
-                                )}
+                    {/* Mobile: Render Friends and Communities below profile */}
+                    {isMobile && activeTab === 'perfil' && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                            <FriendsBox />
+                            <CommunitiesBox />
+                        </div>
+                    )}
+                </ContentColumn>
 
-                                <ContentColumn key={`${activeTab}-${refreshKey}`}>
-                                    {renderActiveContent()}
-
-                                    {/* Mobile: Render Friends and Communities below profile */}
-                                    {isMobile && activeTab === 'perfil' && (
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                                            <FriendsBox />
-                                            <CommunitiesBox />
-                                        </div>
-                                    )}
-                                </ContentColumn>
-
-                                {activeTab === 'perfil' && (
-                                    <RightColumn>
-                                        <FriendsBox />
-                                        <CommunitiesBox />
-                                    </RightColumn>
-                                )}
-                            </MainContainer>
-                        </OrkutContainer>
-                        );
+                {activeTab === 'perfil' && (
+                    <RightColumn>
+                        <FriendsBox />
+                        <CommunitiesBox />
+                    </RightColumn>
+                )}
+            </MainContainer>
+        </OrkutContainer>
+    );
 };
 
-                        export default OrkutWindow;
+export default OrkutWindow;

@@ -1,109 +1,107 @@
-```javascript
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
-import { WhiteBox, BoxTitle, NavLink } from './OrkutLayout';
+import { WhiteBox, BoxTitle } from './OrkutLayout';
 import { fetchJsonFromStorage } from '../../utils/storageLoader';
 import FirebaseMedia from '../FirebaseMedia';
 import { resolveOrkutImage } from '../../utils/orkutImageLoader';
 
 const ScrapItem = styled.div`
-border - bottom: 1px solid #e5e5e5;
-padding: 15px;
-display: flex;
-gap: 15px;
-animation: fadeIn 0.4s ease - out;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 15px;
+  display: flex;
+  gap: 15px;
+  animation: fadeIn 0.4s ease-out;
   
   &:hover {
-  background - color: #f7f9fc;
-}
+    background-color: #f7f9fc;
+  }
   
-  &: last - child {
-  border - bottom: none;
-}
+  &:last-child {
+    border-bottom: none;
+  }
 
-@keyframes fadeIn {
+  @keyframes fadeIn {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
-}
+  }
 `;
 
 const ScrapAuthorImg = styled(FirebaseMedia)`
-width: 64px;
-height: 64px;
-border - radius: 4px;
-border: 1px solid #ddd;
-object - fit: cover;
-background - color: #f0f0f0;
+  width: 64px;
+  height: 64px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  object-fit: cover;
+  background-color: #f0f0f0;
 `;
 
 const ScrapHeader = styled.div`
-display: flex;
-justify - content: space - between;
-align - items: flex - start;
-margin - bottom: 8px;
-font - size: 11px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  font-size: 11px;
 `;
 
 const ScrapAuthorName = styled.span`
-font - weight: bold;
-color: #06c;
+  font-weight: bold;
+  color: #06c;
 `;
 
 const ScrapDate = styled.span`
-color: #666;
+  color: #666;
 `;
 
 const ScrapContent = styled.div`
-line - height: 1.5;
-word -break: break-word;
-font - size: 13px;
-color: #333;
+  line-height: 1.5;
+  word-break: break-word;
+  font-size: 13px;
+  color: #333;
   
   font {
-  color: inherit!important;
-}
+    color: inherit !important;
+  }
 
   img {
-  max - width: 100 %;
-  height: auto;
-}
+    max-width: 100%;
+    height: auto;
+  }
 `;
 
 // --- Loading Skeletons ---
 const shimmer = `
-@keyframes shimmer {
-  0 % { background- position: -200px 0;
-}
-100 % { background- position: 200px 0; }
+  @keyframes shimmer {
+    0% { background-position: -200px 0; }
+    100% { background-position: 200px 0; }
   }
 `;
 
 const SkeletonBase = styled.div`
-background: linear - gradient(90deg, #e8e8e8 0px, #f5f5f5 50px, #e8e8e8 100px);
-background - size: 200px 100 %;
-animation: shimmer 1.2s infinite linear;
-  ${ shimmer }
+  background: linear-gradient(90deg, #e8e8e8 0px, #f5f5f5 50px, #e8e8e8 100px);
+  background-size: 200px 100%;
+  animation: shimmer 1.2s infinite linear;
+  ${shimmer}
 `;
 
 const SkeletonScrap = styled.div`
-border - bottom: 1px solid #e5e5e5;
-padding: 15px;
-display: flex;
-gap: 15px;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 15px;
+  display: flex;
+  gap: 15px;
 `;
 
 const SkeletonAvatar = styled(SkeletonBase)`
-width: 64px;
-height: 64px;
-border - radius: 4px;
-flex - shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 4px;
+  flex-shrink: 0;
 `;
 
 const SkeletonLine = styled(SkeletonBase)`
-height: ${ props => props.height || '14px' };
-width: ${ props => props.width || '100%' };
-border - radius: 4px;
-margin - bottom: 8px;
+  height: ${props => props.height || '14px'};
+  width: ${props => props.width || '100%'};
+  border-radius: 4px;
+  margin-bottom: 8px;
 `;
 
 const LoadingSkeleton = () => (
@@ -137,8 +135,9 @@ const Scraps = () => {
     if (loadedChunks.has(chunkIndex)) return;
 
     try {
-      const module = await import(`../../ data / orkut / chunks / scraps_chunk_${ chunkIndex }.js`);
-      const chunkData = module.default;
+      // Changed from dynamic import to fetchJsonFromStorage
+      const chunkData = await fetchJsonFromStorage(`orkut/chunks/scraps_chunk_${chunkIndex}.json`);
+      if (!chunkData) return;
 
       setScraps(prev => {
         const newScraps = [...prev];
@@ -151,7 +150,7 @@ const Scraps = () => {
 
       setLoadedChunks(prev => new Set([...prev, chunkIndex]));
     } catch (err) {
-      console.error(`Failed to load chunk ${ chunkIndex }: `, err);
+      console.error(`Failed to load chunk ${chunkIndex}:`, err);
     }
   }, [loadedChunks]);
 
@@ -205,9 +204,8 @@ const Scraps = () => {
             ref={index === visibleScraps.length - 1 ? lastElementRef : null}
           >
             <ScrapAuthorImg
-              src={resolveOrkutImage(scrap.authorPhoto)}
+              path={resolveOrkutImage(scrap.authorPhoto)}
               alt={scrap.author}
-              onError={(e) => { e.target.src = resolveOrkutImage('user_thumb_medium'); }}
             />
             <div style={{ flex: 1 }}>
               <ScrapHeader>
