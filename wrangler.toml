@@ -1,3 +1,4 @@
 name = "matheusdanoite"
 compatibility_date = "2026-02-04"
-directory = "./src"
+[assets]
+directory = "./dist"
