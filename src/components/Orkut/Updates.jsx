@@ -228,7 +228,7 @@ const Updates = () => {
             if (entries[0].isIntersecting && visibleCount < TOTAL_UPDATES) {
                 setVisibleCount(prev => prev + ITEMS_PER_PAGE);
             }
-        });
+        }, { rootMargin: '400px' });
         if (node) observer.current.observe(node);
     }, [visibleCount]);
 
@@ -255,8 +255,8 @@ const Updates = () => {
         }
     };
 
-    const renderUpdate = (update, index, isLast) => {
-        const ref = isLast ? lastElementRef : null;
+    const renderUpdate = (update, index, isFirstInSlice) => {
+        const ref = isFirstInSlice ? lastElementRef : null;
 
         let icon = null;
         let text = "";
@@ -329,6 +329,7 @@ const Updates = () => {
                                             path={resolveOrkutImage(f.image)}
                                             title={f.name}
                                             alt={f.name}
+                                            loading="lazy"
                                         />
                                     ))}
                                 </FriendsGrid>
@@ -438,7 +439,7 @@ const Updates = () => {
                     <UpdateImg
                         path={resolveOrkutImage(img)}
                         alt="update image"
-                    // onError handled by FirebaseMedia
+                        loading="lazy"
                     />
                 ) : (
                     <UpdateIcon>{icon || "📋"}</UpdateIcon>
@@ -471,7 +472,7 @@ const Updates = () => {
             <BoxTitle>minhas atualizações ({TOTAL_UPDATES})</BoxTitle>
             <div style={{ padding: '0' }}>
                 {displayUpdates.map((update, index) =>
-                    renderUpdate(update, index, index === displayUpdates.length - 1)
+                    renderUpdate(update, index, index === Math.max(0, displayUpdates.length - 5))
                 )}
 
                 {visibleCount < TOTAL_UPDATES && (

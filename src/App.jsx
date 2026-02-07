@@ -4,6 +4,7 @@ import { styleReset, List, ListItem, Divider } from 'react95';
 import original from 'react95/dist/themes/original';
 import w95fa from './assets/fonts/w95fa.woff2';
 import Desktop from './components/Desktop';
+import ErrorBoundary from './components/ErrorBoundary';
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -24,7 +25,11 @@ function App() {
   return (
     <ThemeProvider theme={original}>
       <GlobalStyles />
-      <Desktop />
+      <div style={{ position: 'relative', zIndex: 0 }}>
+        <ErrorBoundary>
+          <Desktop />
+        </ErrorBoundary>
+      </div>
     </ThemeProvider>
   );
 }

@@ -57,12 +57,12 @@ export const FriendsList = () => {
     const lastElementRef = useCallback(node => {
         if (observer.current) observer.current.disconnect();
         observer.current = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting && visibleCount < ORKUT_FRIENDS.length) {
+            if (entries[0].isIntersecting && visibleCount < items.length) {
                 setVisibleCount(prev => prev + ITEMS_PER_PAGE);
             }
-        });
+        }, { rootMargin: '400px' });
         if (node) observer.current.observe(node);
-    }, [visibleCount]);
+    }, [visibleCount, items.length]);
 
     const [items, setItems] = useState([]);
 
@@ -77,16 +77,12 @@ export const FriendsList = () => {
                 {items.slice(0, visibleCount).map((friend, index) => (
                     <GridItem
                         key={friend.id}
-                        ref={index === visibleCount - 1 ? lastElementRef : null}
+                        ref={index === Math.max(0, visibleCount - 12) ? lastElementRef : null}
                     >
                         <ItemImg
                             path={resolveOrkutImage(friend.photo)}
                             alt={friend.name}
-                        // onError handled by FirebaseMedia placeholder or logic? 
-                        // FirebaseMedia doesn't support onError prop directly passed to styled, 
-                        // but supports it on StyledImg.
-                        // The previous onError used a google static URL.
-                        // We can handle fallback in resolveOrkutImage or just let it fail to placeholder.
+                            loading="lazy"
                         />
                         <ItemName>{friend.name}</ItemName>
                     </GridItem>
@@ -108,12 +104,12 @@ export const CommunitiesList = () => {
     const lastElementRef = useCallback(node => {
         if (observer.current) observer.current.disconnect();
         observer.current = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting && visibleCount < ORKUT_COMMUNITIES.length) {
+            if (entries[0].isIntersecting && visibleCount < items.length) {
                 setVisibleCount(prev => prev + ITEMS_PER_PAGE);
             }
-        });
+        }, { rootMargin: '400px' });
         if (node) observer.current.observe(node);
-    }, [visibleCount]);
+    }, [visibleCount, items.length]);
 
     const [items, setItems] = useState([]);
 
@@ -128,9 +124,9 @@ export const CommunitiesList = () => {
                 {items.slice(0, visibleCount).map((comm, index) => (
                     <GridItem
                         key={comm.id}
-                        ref={index === visibleCount - 1 ? lastElementRef : null}
+                        ref={index === Math.max(0, visibleCount - 12) ? lastElementRef : null}
                     >
-                        <ItemImg path={resolveOrkutImage(comm.photo)} alt={comm.name} />
+                        <ItemImg path={resolveOrkutImage(comm.photo)} alt={comm.name} loading="lazy" />
                         <ItemName>{comm.name}</ItemName>
                     </GridItem>
                 ))}

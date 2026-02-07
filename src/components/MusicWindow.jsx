@@ -58,15 +58,22 @@ const MusicWindow = () => {
     const [error, setError] = useState(false);
 
     useEffect(() => {
-        // Defines the API URL. In production (GitHub Pages), this MUST be the full URL of your Netlify site.
-        // Example: https://meu-portfolio.netlify.app/.netlify/functions/lastfm
         // Defines the API URL. In production (Cloudflare Pages), this is relative.
-        // Example: /api/lastfm
+        // Example: /lastfm
         const FUNCTION_URL = '/api/lastfm';
 
         fetch(FUNCTION_URL)
-            .then(res => {
-                if (!res.ok) throw new Error('Failed to fetch');
+            .then(async res => {
+                if (!res.ok) {
+                    let errMsg = `Erro ${res.status}`;
+                    try {
+                        const data = await res.json();
+                        if (data.error) errMsg = data.error;
+                    } catch (e) {
+                        // ignore parse error if not JSON
+                    }
+                    throw new Error(errMsg);
+                }
                 return res.json();
             })
             .then(data => {
@@ -75,7 +82,7 @@ const MusicWindow = () => {
             })
             .catch(err => {
                 console.error(err);
-                setError(true);
+                setError(err.message || 'Falha ao buscar dados');
                 setLoading(false);
             });
     }, []);
@@ -85,7 +92,8 @@ const MusicWindow = () => {
     if (error) return (
         <div style={{ padding: '20px', textAlign: 'center' }}>
             <p>Erro ao carregar músicas.</p>
-            <p style={{ fontSize: '0.8em' }}>(Verifique as chaves de API no Netlify)</p>
+            <p style={{ fontSize: '0.8em', color: '#ff4444', marginTop: '5px' }}>{error}</p>
+            <p style={{ fontSize: '0.8em' }}>(Verifique as chaves de API no Cloudflare)</p>
         </div>
     );
 

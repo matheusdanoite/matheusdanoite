@@ -4,7 +4,8 @@ import Draggable from 'react-draggable';
 import styled from 'styled-components';
 import MusicWindow from './MusicWindow';
 import BlueSkyWindow from './BlueSkyWindow';
-import XboxWindow from './XboxWindow';
+import SteamWindow from './SteamWindow';
+import DiscordWindow from './DiscordWindow';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -36,7 +37,8 @@ const WindowContainer = styled.div`
   @media (min-width: 769px) {
     position: absolute;
     left: ${props => props.$left};
-    top: ${props => props.$top};
+    top: ${props => props.$top ? props.$top : 'auto'};
+    bottom: ${props => props.$bottom ? props.$bottom : 'auto'};
   }
 
   /* Mobile Styles */
@@ -71,8 +73,11 @@ const RestartButtonContainer = styled.div`
   }
 `;
 
-const DraggableWindow = ({ id, title, children, onClose, onFocus, zIndex, desktopPos, isMobile, windowWidth }) => {
+
+
+const DraggableWindow = ({ id, title, children, onClose, onFocus, zIndex, desktopPos, isMobile, windowWidth, windowHeight, innerRef }) => {
     const nodeRef = useRef(null);
+
 
     return (
         <Draggable
@@ -80,11 +85,10 @@ const DraggableWindow = ({ id, title, children, onClose, onFocus, zIndex, deskto
             handle=".window-header"
             onMouseDown={() => onFocus(id)}
             disabled={isMobile}
-            // Reset position on mobile to prevent 'transform' artifacts from desktop drags
             position={isMobile ? { x: 0, y: 0 } : undefined}
         >
-            <WindowContainer ref={nodeRef} $zIndex={zIndex} $left={desktopPos.left} $top={desktopPos.top}>
-                <Window style={{ width: windowWidth, maxWidth: '95vw' }} className="window">
+            <WindowContainer ref={nodeRef} $zIndex={zIndex} $left={desktopPos.left} $top={desktopPos.top} $bottom={desktopPos.bottom}>
+                <Window style={{ width: windowWidth, height: windowHeight, maxWidth: '95vw', display: 'flex', flexDirection: 'column', position: 'relative' }} className="window">
                     <WindowHeader className="window-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: isMobile ? 'default' : 'grab' }}>
                         <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             {title}
@@ -93,23 +97,42 @@ const DraggableWindow = ({ id, title, children, onClose, onFocus, zIndex, deskto
                             <span style={{ fontWeight: 'bold', transform: 'translateY(-1px)' }}>x</span>
                         </Button>
                     </WindowHeader>
-                    <WindowContent style={{ padding: 0 }}>
+
+
+                    <WindowContent style={{ padding: 0, flex: 1, overflowY: 'auto' }} ref={innerRef}>
                         {children}
                     </WindowContent>
                 </Window>
             </WindowContainer>
-        </Draggable>
+        </Draggable >
     );
 };
 
 const Redes = () => {
     // Mobile Detection
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    const musicRef = useRef(null);
+    const [musicHeight, setMusicHeight] = useState(0);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 768);
         window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+
+        // Measure music window height
+        const observer = new ResizeObserver((entries) => {
+            for (let entry of entries) {
+                if (entry.target === musicRef.current) {
+                    setMusicHeight(entry.contentRect.height + 34); // + window header approx
+                }
+            }
+        });
+
+        if (musicRef.current) observer.observe(musicRef.current);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            observer.disconnect();
+        };
     }, []);
 
     // Window State
@@ -132,15 +155,24 @@ const Redes = () => {
             width: '480px',
             desktopPos: { top: '20px', left: '340px' }
         },
-        xbox: {
-            id: 'xbox',
-            title: 'xbox',
+        steam: {
+            id: 'steam',
+            title: 'steam',
             isOpen: true,
             zIndex: 1,
-            content: <XboxWindow />,
+            content: <SteamWindow />,
             width: '350px',
             desktopPos: { top: '20px', left: '840px' }
-        }
+        },
+        /* discord: {
+            id: 'discord',
+            title: 'discord',
+            isOpen: true,
+            zIndex: 3,
+            content: <DiscordWindow />,
+            width: '300px',
+            desktopPos: { top: `${20 + musicHeight + 75}px`, left: '20px' }
+        } */
     });
 
     const closeWindow = (id) => {
@@ -173,7 +205,8 @@ const Redes = () => {
             // Let's keep it simple: Music=1, BlueSky=2, Xbox=1 (default state)
             newWindows.music.zIndex = 1;
             newWindows.bluesky.zIndex = 2;
-            newWindows.xbox.zIndex = 1;
+            newWindows.steam.zIndex = 1;
+            // newWindows.discord.zIndex = 1;
             return newWindows;
         });
     };
@@ -185,7 +218,7 @@ const Redes = () => {
             {Object.values(windows).map(win => (
                 win.isOpen && (
                     <DraggableWindow
-                        key={`${win.id}-${isMobile}`} // Force remount on mobile/desktop switch
+                        key={`${win.id}-${isMobile}`}
                         id={win.id}
                         title={win.title}
                         onClose={closeWindow}
@@ -194,6 +227,8 @@ const Redes = () => {
                         desktopPos={win.desktopPos}
                         isMobile={isMobile}
                         windowWidth={win.width}
+                        windowHeight={win.height}
+                        innerRef={win.id === 'music' ? musicRef : null}
                     >
                         {win.content}
                     </DraggableWindow>
@@ -210,6 +245,8 @@ const Redes = () => {
                     </Button>
                 </RestartButtonContainer>
             )}
+
+
         </Wrapper>
     );
 };

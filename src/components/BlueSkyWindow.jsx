@@ -23,7 +23,7 @@ const BlueSkyWindow = () => {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await fetch('https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=matheusdanoite.bsky.social&limit=5');
+                const response = await fetch('https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=matheusdanoite.com&limit=5');
                 if (!response.ok) throw new Error('Failed to fetch');
 
                 const data = await response.json();
@@ -55,8 +55,8 @@ const BlueSkyWindow = () => {
                 ))}
             </PostList >
             <div style={{ textAlign: 'center', marginTop: '10px', fontSize: '0.8rem' }}>
-                <Anchor href="https://bsky.app/profile/matheusdanoite.bsky.social" target="_blank" style={{ textDecoration: 'none' }}>
-                    @matheusdanoite.bsky.social no BlueSky
+                <Anchor href="https://bsky.app/profile/matheusdanoite.com" target="_blank" style={{ textDecoration: 'none' }}>
+                    @matheusdanoite.com no BlueSky
                 </Anchor>
             </div>
         </div >

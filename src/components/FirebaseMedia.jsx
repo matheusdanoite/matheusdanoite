@@ -16,7 +16,11 @@ const StyledImg = styled.img`
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: ${props => props.$objectFit || 'cover'};
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: ${props => props.$objectFit || 'cover'};
   opacity: ${props => props.$loaded ? 1 : 0};
   transition: opacity 0.3s;
 `;
@@ -25,12 +29,12 @@ const StyledVideo = styled.video`
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: ${props => props.$objectFit || 'cover'};
   opacity: ${props => props.$loaded ? 1 : 0};
   transition: opacity 0.3s;
 `;
 
-const FirebaseMedia = ({ path, type = 'image', alt, className, controls, autoPlay, loop, muted, ...props }) => {
+const FirebaseMedia = React.forwardRef(({ path, type = 'image', alt, className, controls, autoPlay, loop, muted, objectFit, showPlaceholder = true, ...props }, ref) => {
     const [src, setSrc] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -49,7 +53,6 @@ const FirebaseMedia = ({ path, type = 'image', alt, className, controls, autoPla
                     } else {
                         setError(true);
                     }
-                    // Image/Video onload will handle loading state
                 }
             } catch (e) {
                 console.error("Error loading media:", path, e);
@@ -70,26 +73,65 @@ const FirebaseMedia = ({ path, type = 'image', alt, className, controls, autoPla
         setError(true);
     };
 
+    // Merged ref callback to handle both parent ref and our internal checks
+    const handleRef = (node) => {
+        // Forward the ref to parent
+        if (typeof ref === 'function') {
+            ref(node);
+        } else if (ref) {
+            ref.current = node;
+        }
+
+        // Internal check for image visibility (Opacity Fix)
+        if (type !== 'video' && node && node.complete && loading) {
+            handleLoad();
+        }
+    };
+
+    if (!path) return <Placeholder className={className} />;
+
+    // Safe handlers that merge internal logic with prop callbacks
+    const handleImageLoad = (e) => {
+        handleLoad();
+        if (props.onLoad) props.onLoad(e);
+    };
+
+    const handleVideoLoadedData = (e) => {
+        handleLoad();
+        if (props.onLoadedData) props.onLoadedData(e);
+    };
+
+    const handleMediaError = (e) => {
+        handleError();
+        if (props.onError) props.onError(e);
+    };
+
+    // Destructure props to avoid overwriting our handlers with ...props
+    // and to not pass invalid props to DOM elements if any
+    const { onLoad, onLoadedData, onError: propOnError, ...restProps } = props;
+
     if (!path) return <Placeholder className={className} />;
 
     if (error && !src) return <Placeholder className={className}>Erro</Placeholder>;
 
     return (
         <>
-            {loading && <Placeholder className={className} />}
+            {loading && showPlaceholder && <Placeholder className={className} />}
             {type === 'video' ? (
                 <StyledVideo
                     src={src}
                     className={className}
                     $loaded={!loading}
-                    onLoadedData={handleLoad}
-                    onError={handleError}
+                    $objectFit={objectFit}
+                    onLoadedData={handleVideoLoadedData}
+                    onError={handleMediaError}
                     controls={controls}
                     autoPlay={autoPlay}
                     loop={loop}
                     muted={muted}
                     playsInline
-                    {...props}
+                    ref={handleRef}
+                    {...restProps}
                 />
             ) : (
                 <StyledImg
@@ -97,13 +139,15 @@ const FirebaseMedia = ({ path, type = 'image', alt, className, controls, autoPla
                     alt={alt || "Media"}
                     className={className}
                     $loaded={!loading}
-                    onLoad={handleLoad}
-                    onError={handleError}
-                    {...props}
+                    $objectFit={objectFit}
+                    onLoad={handleImageLoad}
+                    onError={handleMediaError}
+                    ref={handleRef}
+                    {...restProps}
                 />
             )}
         </>
     );
-};
+});
 
 export default FirebaseMedia;

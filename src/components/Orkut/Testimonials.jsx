@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import { WhiteBox, BoxTitle } from './OrkutLayout';
 import { fetchJsonFromStorage } from '../../utils/storageLoader';
@@ -74,7 +74,7 @@ const Testimonials = () => {
       if (entries[0].isIntersecting && visibleCount < items.length) {
         setVisibleCount(prev => prev + ITEMS_PER_PAGE);
       }
-    });
+    }, { rootMargin: '400px' });
     if (node) observer.current.observe(node);
   }, [visibleCount, items.length]);
 
@@ -87,12 +87,12 @@ const Testimonials = () => {
         {visibleItems.map((item, index) => (
           <TestimonialItem
             key={item.id}
-            ref={index === visibleItems.length - 1 ? lastElementRef : null}
+            ref={index === Math.max(0, visibleItems.length - 5) ? lastElementRef : null}
           >
             <AuthorImg
               path={resolveOrkutImage(item.authorPhoto)}
               alt={item.author}
-            // onError handled by FirebaseMedia
+              loading="lazy"
             />
             <div style={{ flex: 1 }}>
               <TestimonialHeader>

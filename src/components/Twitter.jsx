@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { resolveTwitterImage, loadTweetsChunk } from '../utils/twitterLoader';
+import { resolveTwitterImage, loadTweetsChunk, getManifest } from '../utils/twitterLoader';
 import { getStorageUrl } from '../utils/storageLoader';
 import FirebaseMedia from './FirebaseMedia';
 
@@ -785,23 +785,32 @@ const Twitter = () => {
 
   // --- Fetching ---
 
+  // State to track total chunks
+  const [totalChunks, setTotalChunks] = useState(0);
+
+  // Load a specific chunk index and append it to our tweets list
+  // For 'oldest first' (chronological), we load chunks in reverse order (52, 51, ... 0)
+  // And we reverse the content of each chunk so its internal order is oldest->newest.
+  // The accumulated 'tweets' array will be [OldestChunkReversed, NextOldestChunkReversed...]
   const loadChunk = async (index) => {
     if (isFetchingChunk.current) return false;
     isFetchingChunk.current = true;
     console.log(`Loading chunk ${index}...`);
     try {
-      const newTweets = await loadTweetsChunk(index);
-      if (newTweets && newTweets.length > 0) {
+      const rawTweets = await loadTweetsChunk(index);
+      if (rawTweets && rawTweets.length > 0) {
+        // Reverse here to make it oldest -> newest
+        const newTweets = [...rawTweets].reverse();
+
         setTweets(prev => {
           const existingIds = new Set(prev.map(t => t.id));
           const uniqueNew = newTweets.filter(t => !existingIds.has(t.id));
           return [...prev, ...uniqueNew];
         });
-        // If it's the first chunk, showing initialized
-        if (index === 0) {
-          // Initial set visible
-          setVisibleTweets(newTweets.slice(0, BATCH_SIZE));
-          setCurrentIndex(BATCH_SIZE);
+
+        if (tweets.length === 0) {
+          // If first load, might set visible here, but effect below handles it.
+          // We can rely on the effect.
         }
         return true;
       }
@@ -815,10 +824,29 @@ const Twitter = () => {
   };
 
   // Initial Load
+  // Initial Load
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      await loadChunk(0);
+      try {
+        const manifest = await getManifest();
+        if (manifest && manifest.totalChunks) {
+          setTotalChunks(manifest.totalChunks);
+          // Start from the last chunk (oldest)
+          const startChunk = manifest.totalChunks - 1;
+          setChunkIndex(startChunk);
+          await loadChunk(startChunk);
+
+          // Force visibility initialization here to avoid race conditions or waiting for effect
+          // Actually, relying on effect is safer if state updates batch.
+        } else {
+          // Fallback if manifest fails?
+          await loadChunk(0);
+        }
+      } catch (e) {
+        console.error("Manifest load failed", e);
+        await loadChunk(0);
+      }
       setLoading(false);
     };
     init();
@@ -847,17 +875,13 @@ const Twitter = () => {
       setVisibleTweets(prev => [...prev, ...tweets.slice(currentIndex, nextIndex)]);
       setCurrentIndex(nextIndex);
     } else {
-      // We reached the end of loaded tweets, try to load next chunk
-      const nextChunkIdx = chunkIndex + 1;
-      // Basic check to prevent infinite errors if chunk doesn't exist, though loader handles null
-      const success = await loadChunk(nextChunkIdx);
-      if (success) {
-        setChunkIndex(nextChunkIdx);
-        // The effect above will trigger again or we can manually advance visible
-        // But state update acts as trigger. 
-        // We need to advance currentIndex and visibleTweets after state update?
-        // Actually, once 'tweets' updates, we need to ensure we show the new ones.
-        // But 'tweets' update is async.
+      // Reached end of loaded tweets. Load earlier chunk (moves towards newest date).
+      const nextChunkIdx = chunkIndex - 1;
+      if (nextChunkIdx >= 0) {
+        const success = await loadChunk(nextChunkIdx);
+        if (success) {
+          setChunkIndex(nextChunkIdx);
+        }
       }
     }
   };
@@ -885,23 +909,15 @@ const Twitter = () => {
         if (visibleMediaCount < allMedia.length) {
           setVisibleMediaCount(prev => Math.min(prev + MEDIA_BATCH_SIZE, allMedia.length));
         } else {
-          // We showed all loaded media. Load MORE chunks to find more media.
-          // Avoid concurrent loads
-          const nextChunkIdx = chunkIndex + 1;
-          // We call loadChunk. Note: loadChunk handles setting 'tweets', 
-          // but we need to update chunkIndex on success to keep tracking.
-          // We can reuse the logic from loadMoreTweets essentially but specialized or just invoke it?
-          // loadMoreTweets depends on currentIndex vs tweets.length.
-          // Here we depend on media.
-
-          // Let's just manually call loadChunk if we assume there are more chunks.
-          // We don't know total chunks count here easily without manifest, but failing gracefully is fine.
-          loadChunk(nextChunkIdx).then(success => {
-            if (success) {
-              setChunkIndex(nextChunkIdx);
-              // visibleMediaCount will naturally be < new allMedia.length on next render/effect cycle
-            }
-          });
+          // Load more chunks (moving towards newer dates)
+          const nextChunkIdx = chunkIndex - 1;
+          if (nextChunkIdx >= 0) {
+            loadChunk(nextChunkIdx).then(success => {
+              if (success) {
+                setChunkIndex(nextChunkIdx);
+              }
+            });
+          }
         }
       }
     }, { rootMargin: '600px' });
@@ -1099,7 +1115,7 @@ const Twitter = () => {
                 )
               })}
               <div ref={mediaSentinelRef} style={{ gridColumn: '1 / -1', padding: '20px', textAlign: 'center', color: '#999', fontSize: '11px' }}>
-                {visibleMediaCount < allMedia.length ? 'carregando mais mídia...' : 'carregando mais tweets...'}
+                {visibleMediaCount < allMedia.length || chunkIndex > 0 ? 'carregando mais mídia...' : 'fim das mídias'}
               </div>
             </MediaGridContainer>
           )}

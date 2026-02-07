@@ -179,7 +179,7 @@ const Scraps = () => {
       if (entries[0].isIntersecting && visibleCount < TOTAL_SCRAPS) {
         setVisibleCount(prev => prev + ITEMS_PER_PAGE);
       }
-    });
+    }, { rootMargin: '400px' });
     if (node) observer.current.observe(node);
   }, [visibleCount]);
 
@@ -201,11 +201,12 @@ const Scraps = () => {
         {visibleScraps.map((scrap, index) => (
           <ScrapItem
             key={scrap.id}
-            ref={index === visibleScraps.length - 1 ? lastElementRef : null}
+            ref={index === Math.max(0, visibleScraps.length - 5) ? lastElementRef : null}
           >
             <ScrapAuthorImg
               path={resolveOrkutImage(scrap.authorPhoto)}
               alt={scrap.author}
+              loading="lazy"
             />
             <div style={{ flex: 1 }}>
               <ScrapHeader>

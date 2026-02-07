@@ -1,0 +1,13 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      // Permite leitura pública (necessário para seu portfólio carregar as imagens)
+      allow read: if true;
+      
+      // Bloqueia qualquer escrita via cliente (web/app).
+      // Você ainda pode fazer upload via Firebase Console ou Admin SDK.
+      allow write: if false; 
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     OrkutContainer,
     MainContainer,
@@ -48,9 +48,13 @@ const OrkutWindow = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const isMobile = useIsMobile();
     const [profileData, setProfileData] = useState(null);
+    const [friends, setFriends] = useState([]);
+    const [communities, setCommunities] = useState([]);
 
     useEffect(() => {
         fetchJsonFromStorage('orkut/profile.json').then(data => setProfileData(data || {}));
+        fetchJsonFromStorage('orkut/friends.json').then(data => setFriends(data || []));
+        fetchJsonFromStorage('orkut/communities.json').then(data => setCommunities(data || []));
     }, []);
 
     const handleTabClick = (tab) => {
@@ -69,7 +73,7 @@ const OrkutWindow = () => {
                 {title}
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 24px' }}>
-                {items.map((item, idx) => (
+                {(items || []).map((item, idx) => (
                     <div key={idx} style={{ fontSize: '13px', display: 'flex', gap: '5px' }}>
                         <b style={{ color: '#6d84b4', minWidth: '80px', whiteSpace: 'pre-line' }}>{item.label}:</b>
                         <span style={{ color: '#333' }}>{item.value}</span>
@@ -100,17 +104,17 @@ const OrkutWindow = () => {
                 return (
                     <>
                         <WhiteBox>
-                            <BoxTitle>{profileData ? profileData.name : 'Carregando...'}</BoxTitle>
+                            <BoxTitle>{profileData?.name || 'Carregando...'}</BoxTitle>
                             <div style={{ padding: '20px' }}>
                                 {profileData && (
                                     <>
                                         <ProfilePicture src={resolveOrkutImage(profileData.photo)} alt="Profile" />
                                         <div style={{ marginTop: '10px' }}>
                                             {renderProfileSection('Social', [
-                                                { label: "relacionamento", value: profileData.relationship },
-                                                { label: "aniversário", value: profileData.birthday },
-                                                { label: "local", value: profileData.location },
-                                                ...(profileData.social || [])
+                                                { label: "relacionamento", value: profileData?.relationship },
+                                                { label: "aniversário", value: profileData?.birthday },
+                                                { label: "local", value: profileData?.location },
+                                                ...(profileData?.social || [])
                                             ])}
                                             {renderProfileSection('Profissional', profileData.professional)}
                                             {renderProfileSection('Pessoal', profileData.personal)}
@@ -120,10 +124,10 @@ const OrkutWindow = () => {
                                 )}
                                 <div style={{ marginTop: '25px' }}>
                                     <div style={{ color: '#5778A1', fontWeight: 'bold', borderBottom: '1px solid #BCCDE9', marginBottom: '12px', paddingBottom: '4px', fontSize: '12px' }}>
-                                        Sobre {profileData && profileData.name ? profileData.name.split(' ')[0] : 'mim'}
+                                        Sobre {profileData?.name ? profileData.name.split(' ')[0] : 'mim'}
                                     </div>
                                     <div style={{ fontSize: '13px', lineHeight: '1.5', color: '#444', textAlign: 'justify' }}>
-                                        {profileData ? profileData.aboutMe : 'Carregando...'}
+                                        {profileData?.aboutMe || 'Carregando...'}
                                     </div>
                                 </div>
                             </div>
@@ -135,10 +139,10 @@ const OrkutWindow = () => {
 
     const FriendsBox = () => (
         <WhiteBox style={{ display: 'flex', flexDirection: 'column', height: '400px' }}>
-            <BoxTitle>amigos ({ORKUT_FRIENDS.length})</BoxTitle>
+            <BoxTitle>amigos ({friends.length})</BoxTitle>
             <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '10px 5px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '33.33% 33.33% 33.33%', gap: '10px 0' }}>
-                    {ORKUT_FRIENDS.map(friend => (
+                    {friends.slice(0, 9).map(friend => (
                         <div key={friend.id} style={{ textAlign: 'center', minWidth: 0 }}>
                             <img
                                 src={resolveOrkutImage(friend.photo)}
@@ -157,10 +161,10 @@ const OrkutWindow = () => {
 
     const CommunitiesBox = () => (
         <WhiteBox style={{ display: 'flex', flexDirection: 'column', height: '400px' }}>
-            <BoxTitle>comunidades ({ORKUT_COMMUNITIES.length})</BoxTitle>
+            <BoxTitle>comunidades ({communities.length})</BoxTitle>
             <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '10px 5px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '33.33% 33.33% 33.33%', gap: '10px 0' }}>
-                    {ORKUT_COMMUNITIES.map(comm => (
+                    {communities.slice(0, 9).map(comm => (
                         <div key={comm.id} style={{ textAlign: 'center', minWidth: 0 }}>
                             <img
                                 src={resolveOrkutImage(comm.photo)}
@@ -185,10 +189,10 @@ const OrkutWindow = () => {
                     <MobileTopBar onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
                         <MobileProfilePhoto
                             src={resolveOrkutImage('user_thumb_medium.jpg')}
-                            alt={profileData.name}
+                            alt={profileData?.name || 'perfil'}
                         />
                         <MobileUserInfo>
-                            <MobileUserName>{profileData.name}</MobileUserName>
+                            <MobileUserName>{profileData?.name || 'carregando...'}</MobileUserName>
                             <MobileActiveTab>{tabLabels[activeTab]}</MobileActiveTab>
                         </MobileUserInfo>
                         <MobileChevron $expanded={mobileMenuOpen}>▼</MobileChevron>
@@ -210,7 +214,7 @@ const OrkutWindow = () => {
                     <LeftColumn>
                         <WhiteBox style={{ padding: '15px' }}>
                             <ProfilePicture src={resolveOrkutImage('user_thumb_medium.jpg')} alt="Matheus José" />
-                            <UserName>{profileData.name}</UserName>
+                            <UserName>{profileData?.name || 'carregando...'}</UserName>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '15px' }}>
                                 <NavLink onClick={() => handleTabClick('perfil')} active={activeTab === 'perfil'}>perfil</NavLink>
                                 <NavLink onClick={() => handleTabClick('atualizacoes')} active={activeTab === 'atualizacoes'}>atualizações</NavLink>

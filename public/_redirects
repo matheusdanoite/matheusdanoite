@@ -1,0 +1,5 @@
+# Exclude API routes from SPA fallback so functions can run
+/api/*  /api/:splat  200
+
+# SPA Catch-all rule for client-side routing
+/*  /index.html  200

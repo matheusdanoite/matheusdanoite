@@ -17,17 +17,12 @@ const AlbumGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 20px;
-  padding: 20px;
+  padding: 20px 20px 40px 20px;
 `;
 
 const AlbumCard = styled.div`
   cursor: pointer;
   text-align: center;
-  transition: transform 0.2s;
-  
-  &:hover {
-    transform: scale(1.03);
-  }
 `;
 
 const AlbumCover = styled(FirebaseMedia)`
@@ -46,6 +41,9 @@ const AlbumName = styled.div`
   font-weight: bold;
   margin-top: 8px;
   text-transform: capitalize;
+  line-height: 1.4;
+  padding: 0 4px 4px 4px;
+  overflow-wrap: break-word;
 `;
 
 const PhotoCount = styled.div`

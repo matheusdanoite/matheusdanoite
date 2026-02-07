@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import { WhiteBox, BoxTitle } from './OrkutLayout';
 import { fetchJsonFromStorage } from '../../utils/storageLoader';
@@ -67,7 +67,7 @@ const Topics = () => {
             if (entries[0].isIntersecting && visibleCount < topics.length) {
                 setVisibleCount(prev => prev + ITEMS_PER_PAGE);
             }
-        });
+        }, { rootMargin: '400px' });
         if (node) observer.current.observe(node);
     }, [visibleCount, topics.length]);
 
@@ -84,7 +84,7 @@ const Topics = () => {
                 {visibleTopics.map((topic, index) => (
                     <TopicItem
                         key={topic.id}
-                        ref={index === visibleTopics.length - 1 ? lastElementRef : null}
+                        ref={index === Math.max(0, visibleTopics.length - 5) ? lastElementRef : null}
                         onClick={() => setSelectedTopic(topic)}
                     >
                         <div style={{ flex: 1 }}>
