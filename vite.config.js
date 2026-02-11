@@ -11,17 +11,16 @@ export default defineConfig(({ command }) => ({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // Allow Vite/Rollup to handle chunking automatically to avoid circular deps
-          // or split very specifically if needed later.
-          // For now, removing the problematic vendor split.
           if (id.includes('node_modules')) {
-            return 'vendor'; // Single huge vendor chunk is safer than circular deps
+            if (id.includes('firebase')) {
+              return 'firebase';
+            }
           }
         }
       }
     },
-    // Increase chunk size warning limit since we have large data files
-    chunkSizeWarningLimit: 1000,
+    // Increase chunk size warning limit since Three.js (lazy) is slightly over 1MB
+    chunkSizeWarningLimit: 1100,
     // Minify with esbuild for faster builds
     minify: 'esbuild',
     // Target modern browsers for smaller bundles

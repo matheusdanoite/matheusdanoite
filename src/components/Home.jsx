@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import Profile3D from './Profile3D';
+import React, { useState, useRef, useEffect, Suspense, lazy } from 'react';
+const Profile3D = lazy(() => import('./Profile3D'));
 import { Button } from 'react95';
 import styled from 'styled-components';
 import GuestbookWindow from './GuestbookWindow';
@@ -262,7 +262,9 @@ const Home = () => {
                     }}
                     windowStyle={{ width: '100%', maxWidth: '500px' }}
                 >
-                    {windows.model.content}
+                    <Suspense fallback={<div style={{ padding: '20px', textAlign: 'center' }}>Carregando modelo...</div>}>
+                        {windows.model.content}
+                    </Suspense>
                 </DraggableWindow>
             )}
 
