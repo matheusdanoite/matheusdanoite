@@ -67,6 +67,7 @@ const MusicWindow = () => {
                 const isJson = contentType && contentType.includes("application/json");
 
                 if (!res.ok) {
+                    console.error(`API Request failed: ${res.url} Status: ${res.status}`);
                     let errMsg = `Erro ${res.status}`;
                     if (isJson) {
                         const data = await res.json();
@@ -79,6 +80,7 @@ const MusicWindow = () => {
                 }
 
                 if (!isJson) {
+                    console.error(`Unexpected Response Content-Type: ${contentType} from ${res.url}`);
                     const text = await res.text();
                     throw new Error(`Esperado JSON, recebido: ${text.slice(0, 50)}`);
                 }
@@ -90,24 +92,30 @@ const MusicWindow = () => {
                 setLoading(false);
             })
             .catch(err => {
-                console.error("Last.fm API failed Details:", {
-                    name: err.name,
-                    message: err.message
-                });
-                setError(`${err.name}: ${err.message}`);
+                console.error("Last.fm API failed:", err);
+                setError(`${err.message || "Erro desconhecido"}`);
                 setLoading(false);
             });
     }, []);
 
     if (loading) return <div style={{ padding: '20px', textAlign: 'center' }}><Hourglass size={32} /></div>;
 
-    if (error) return (
-        <div style={{ padding: '20px', textAlign: 'center' }}>
-            <p>Erro ao carregar músicas.</p>
-            <p style={{ fontSize: '0.8em', color: '#ff4444', marginTop: '5px' }}>{error}</p>
-            <p style={{ fontSize: '0.8em' }}>(Verifique as chaves de API no Cloudflare)</p>
-        </div>
-    );
+    if (error) {
+        const isBackendMissing = error.includes("<!doctype html>") || error.includes("Esperado JSON");
+        return (
+            <div style={{ padding: '20px', textAlign: 'center' }}>
+                <p>Erro ao carregar músicas.</p>
+                <p style={{ fontSize: '0.8em', color: '#ff4444', marginTop: '5px' }}>
+                    {isBackendMissing ? "Backend (Cloudflare Functions) não detectado." : error}
+                </p>
+                <p style={{ fontSize: '0.8em', marginTop: '10px' }}>
+                    {isBackendMissing ?
+                        "Use 'npm run preview:pages' para testar localmente." :
+                        "(Verifique as chaves de API no Cloudflare)"}
+                </p>
+            </div>
+        );
+    }
 
     const displayedTracks = tracks.slice(0, 5);
 

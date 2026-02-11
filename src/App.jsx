@@ -1,6 +1,6 @@
 import React from 'react';
-import { createGlobalStyle, ThemeProvider } from 'styled-components';
-import { styleReset, List, ListItem, Divider } from 'react95';
+import { createGlobalStyle, ThemeProvider, StyleSheetManager } from 'styled-components';
+import { styleReset } from 'react95';
 import original from 'react95/dist/themes/original';
 import w95fa from './assets/fonts/w95fa.woff2';
 import Desktop from './components/Desktop';
@@ -21,16 +21,22 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 
+// Filter out react95 specific props that leak to the DOM in styled-components v6
+const shouldForwardProp = (prop) =>
+  !['active', 'fixed', 'square', 'fullWidth', 'primary', 'variant', 'shadow', 'underline', 'noPadding'].includes(prop);
+
 function App() {
   return (
-    <ThemeProvider theme={original}>
-      <GlobalStyles />
-      <div style={{ position: 'relative', zIndex: 0 }}>
-        <ErrorBoundary>
-          <Desktop />
-        </ErrorBoundary>
-      </div>
-    </ThemeProvider>
+    <StyleSheetManager shouldForwardProp={shouldForwardProp}>
+      <ThemeProvider theme={original}>
+        <GlobalStyles />
+        <div style={{ position: 'relative', zIndex: 0 }}>
+          <ErrorBoundary>
+            <Desktop />
+          </ErrorBoundary>
+        </div>
+      </ThemeProvider>
+    </StyleSheetManager>
   );
 }
 

@@ -82,7 +82,7 @@ const Desktop = () => {
             case 'resume':
                 return (
                     <div style={{ textAlign: 'center', color: 'var(--win-gray-dark)', marginTop: '2rem', minHeight: '100vh' }}>
-                        <p>Currículo em construção...</p>
+                        <p>Vem aí...?</p>
                     </div>
                 );
             case 'contact':

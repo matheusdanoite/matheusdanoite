@@ -33,3 +33,7 @@ scripts/
 # Data (Loaded from Firebase)
 src/data/
 firebase_data/
+
+# Builds & Tooling
+dist/
+.wrangler/

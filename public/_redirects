@@ -1,4 +1,4 @@
-# Exclude API routes from SPA fallback so functions can run
+# Handle API calls via Cloudflare Functions (Higher priority)
 /api/*  /api/:splat  200
 
 # SPA Catch-all rule for client-side routing

@@ -55,6 +55,7 @@ O site que você sempre sonhou, agora pertinho de você.
 ### Pré-requisitos
 *   Node.js (v18+)
 *   Conta no Firebase (Projeto criado)
+*   Wrangler (CLI da Cloudflare)
 
 ### Instalação
 
@@ -70,7 +71,7 @@ O site que você sempre sonhou, agora pertinho de você.
     ```
 
 3.  Configure as Variáveis de Ambiente:
-    Crie um arquivo `.env` na raiz (baseado no `.env.template`):
+    Crie um arquivo `.env` na raiz (baseado no `.env.example`):
     ```env
     VITE_FIREBASE_API_KEY=...
     VITE_FIREBASE_AUTH_DOMAIN=...
@@ -78,6 +79,10 @@ O site que você sempre sonhou, agora pertinho de você.
     VITE_FIREBASE_STORAGE_BUCKET=...
     VITE_FIREBASE_MESSAGING_SENDER_ID=...
     VITE_FIREBASE_APP_ID=...
+    LASTFM_API_KEY=...
+    LASTFM_USERNAME=...
+    STEAM_API_KEY=...
+    STEAM_ID=...
     ```
 
 4.  **Upload dos Dados (Essencial)**:
@@ -91,13 +96,14 @@ O site que você sempre sonhou, agora pertinho de você.
     npm run dev
     ```
 
-## 📦 Deploy (Netlify)
+## 📦 Deploy (Cloudflare Pages)
 
-O projeto contém um `netlify.toml` configurado.
+O projeto está configurado para deploy no **Cloudflare Pages**.
 
 *   **Build Command**: `npm run build`
 *   **Publish Directory**: `dist`
-*   Configure as variáveis de ambiente necessárias no painel do Netlify (Firebase Keys + API Keys do Last.fm/Xbox).
+*   **Deploy Command**: `npm run deploy` (Utiliza Wrangler para deploy da branch especificada)
+*   As funções serverless estão localizadas na pasta `functions/` e serão automaticamente detectadas pelo Cloudflare Pages.
 
 ---
 *Pensado por Matheus José da Silva - Guarapuava, 2026*

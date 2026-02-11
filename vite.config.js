@@ -30,5 +30,13 @@ export default defineConfig(({ command }) => ({
   // Optimize dependency pre-bundling
   optimizeDeps: {
     include: ['react', 'react-dom', 'styled-components']
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8788',
+        changeOrigin: true,
+      }
+    }
   }
 }))

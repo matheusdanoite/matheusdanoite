@@ -4,7 +4,8 @@ export async function onRequest(context) {
 
     const commonHeaders = {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'X-Backend-Function': 'steam-active'
     };
 
     if (!STEAM_API_KEY || !STEAM_ID) {

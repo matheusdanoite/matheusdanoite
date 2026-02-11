@@ -117,12 +117,14 @@ const SteamWindow = () => {
                 const res = await fetch(apiUrl);
 
                 if (!res.ok) {
+                    console.error(`Steam API Request failed: ${res.url} Status: ${res.status}`);
                     const text = await res.text();
                     throw new Error(`HTTP Error ${res.status}: ${text.slice(0, 50)}`);
                 }
 
                 const contentType = res.headers.get("content-type");
                 if (!contentType || !contentType.includes("application/json")) {
+                    console.error(`Steam API Unexpected Content-Type: ${contentType} from ${res.url}`);
                     const text = await res.text();
                     throw new Error(`Formato de resposta inválido (${contentType}). Resposta: ${text.slice(0, 50)}`);
                 }
@@ -131,12 +133,8 @@ const SteamWindow = () => {
                 if (json.error) throw new Error(json.error);
                 setData(json);
             } catch (err) {
-                console.error("Steam API failed Details:", {
-                    name: err.name,
-                    message: err.message,
-                    stack: err.stack
-                });
-                setError(`${err.name}: ${err.message}`);
+                console.error("Steam API failed:", err);
+                setError(err.message || "Erro de conexão");
             } finally {
                 setLoading(false);
             }
@@ -161,12 +159,22 @@ const SteamWindow = () => {
         </LoadingContainer>
     );
 
-    if (error) return (
-        <div style={{ padding: '20px', textAlign: 'center' }}>
-            <p>Erro ao carregar Steam.</p>
-            <p style={{ fontSize: '0.8em', color: '#ff4444' }}>{error}</p>
-        </div>
-    );
+    if (error) {
+        const isBackendMissing = error.includes("<!doctype html>") || error.includes("Formato de resposta inválido");
+        return (
+            <div style={{ padding: '20px', textAlign: 'center' }}>
+                <p>Erro ao carregar Steam.</p>
+                <p style={{ fontSize: '0.8em', color: '#ff4444', marginTop: '5px' }}>
+                    {isBackendMissing ? "Backend não detectado (retornou HTML)." : error}
+                </p>
+                {isBackendMissing && (
+                    <p style={{ fontSize: '0.8em', marginTop: '10px' }}>
+                        Servidor de APIs (Wrangler) está desligado?
+                    </p>
+                )}
+            </div>
+        );
+    }
 
     const { profile, recentGames } = data;
     const status = getStatusInfo(profile.personaState);

@@ -6,7 +6,8 @@ export async function onRequest(context) {
     // Set common headers
     const commonHeaders = {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'X-Backend-Function': 'lastfm-active'
     };
 
     if (!API_KEY || !USERNAME) {
