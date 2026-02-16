@@ -1,77 +1,71 @@
 # matheusdanoite - the website
-O site que você sempre sonhou, agora pertinho de você.
+The website of your dreams, available now.
 
-## 🛠 Tecnologias Utilizadas
+[Português Brasileiro](README.pt-br.md)
 
+## Technologies Used
 ### Frontend (Core)
-*   **React 19**: Biblioteca JavaScript para construção da interface de usuário.
-*   **Vite**: Build tool de última geração, garantindo performance e HMR rápido.
-*   **JavaScript (ES6+)**: Linguagem base do projeto.
+*   **React 19**: JavaScript library for building user interfaces.
+*   **Vite**: Next-generation build tool, ensuring performance and fast HMR.
+*   **JavaScript (ES6+)**: Base language of the project.
 
-### Estilização & UI
-*   **Styled Components**: Sistema de CSS-in-JS para encapsulamento de estilos e temas dinâmicos.
-*   **React95**: Biblioteca de componentes UI que recria fielmente os elementos do Windows 95.
-*   **React Draggable**: Permite que as janelas sejam arrastadas livremente pelo usuário.
+### Styling & UI
+*   **Styled Components**: CSS-in-JS system for style encapsulation and dynamic themes.
+*   **React95**: UI component library that faithfully recreates Windows 95 elements.
+*   **React Draggable**: Allows windows to be freely dragged by the user.
 
-### Multimídia & Interatividade
-*   **React Three Fiber / Drei**: Ecossistema para renderizar gráficos 3D (Three.js) de forma declarativa no React (usado na janela "Eu" para o modelo 3D).
-*   **Three.js**: Motor gráfico 3D base.
-*   **React Canvas Draw**: Permite aos visitantes desenharem livremente no Guestbook.
+### Multimedia & Interactivity
+*   **React Three Fiber / Drei**: Ecosystem for rendering 3D graphics (Three.js) declaratively in React (used in the "Me" window for the 3D model).
+*   **Three.js**: Base 3D graphics engine.
+*   **React Canvas Draw**: Allows visitors to draw freely in the Guestbook.
 
 ### Backend & Serverless
-*   **Netlify Functions**: Middleware serverless (Node.js) para ocultar chaves de API (Last.fm, Xbox) e evitar CORS.
+*   **Netlify Functions**: Serverless middleware (Node.js) to hide API keys (Last.fm, Xbox) and avoid CORS.
 *   **Firebase**:
-    *   **Firestore**: Banco de dados em tempo real para o Guestbook (mensagens e desenhos).
-    *   **Storage**: Armazenamento de CDN para hospedagem de todos os assets pesados (imagens, vídeos, dados JSON de posts/tweets).
+    *   **Firestore**: Real-time database for the Guestbook (messages and drawings).
+    *   **Storage**: CDN storage for hosting all heavy assets (images, videos, posts/tweets JSON data).
 
-### Integrações & APIs
-*   **Last.fm API**: Exibe as músicas ouvidas recentemente em tempo real.
-*   **Xbox Live API (OpenXBL)**: Integração para mostrar status de jogo e conquistas.
-*   **GitHub / Netlify**: Versionamento e CI/CD.
+### Integrations & APIs
+*   **Last.fm API**: Displays recently listened tracks in real-time.
+*   **Xbox Live API (OpenXBL)**: Integration to show game status and achievements.
+*   **GitHub / Netlify**: Versioning and CI/CD.
 
-## 🌟 Funcionalidades Principais
+## Key Features
+1.  **Simulated Desktop Interface**:
+    *   Window system with multitasking support (drag, focus, close).
+    *   Functional Taskbar with clock and Start Menu.
+    *   **Replicated Apps**: Functional and interactive versions of **Instagram** (Stories, Reels, Feed), **Twitter/X** (Infinite Scroll), and **Orkut** (Communities, Friends, Scraps).
+2.  **Optimized Loading (Lazy Loading)**:
+    *   The site does not "bundle" static data. Instead, all content (posts, photos, videos) is asynchronously loaded from **Firebase Storage** only when the user opens the respective app, ensuring a super-fast initial load.
+3.  **Guestbook (Testimonials)**:
+    *   Comments with **Drawing** support (Canvas 500x500px).
+    *   Persistent storage.
+4.  **Activity Monitoring (Live Feed)**:
+    *   What I'm listening to (Last.fm) and playing (Xbox Live).
+5.  **Hybrid Responsive Layout**:
+    *   **Desktop**: Complete Windows 95 experience.
+    *   **Mobile**: Interface adapted into a vertical list for usability.
 
-1.  **Interface Desktop Simulada**:
-    *   Sistema de janelas com suporte a multitarefa (arrastar, focar, fechar).
-    *   Taskbar funcional com relógio e Menu Iniciar.
-    *   **Apps Replicados**: Versões funcionais e interativas de **Instagram** (Stories, Reels, Feed), **Twitter/X** (Infinite Scroll) e **Orkut** (Comunidades, Friends, Scraps).
-
-2.  **Carregamento Otimizado (Lazy Loading)**:
-    *   O site não "bundleia" os dados estáticos. Em vez disso, todo o conteúdo (posts, fotos, vídeos) é carregado assincronamente do **Firebase Storage** apenas quando o usuário abre o respectivo aplicativo, garantindo um carregamento inicial super rápido.
-
-3.  **Guestbook (Depoimentos)**:
-    *   Comentários com suporte a **Desenhos** (Canvas 500x500px).
-    *   Armazenamento persistente.
-
-4.  **Monitoramento de Atividade (Live Feed)**:
-    *   O que estou ouvindo (Last.fm) e jogando (Xbox Live).
-
-5.  **Layout Responsivo Híbrido**:
-    *   **Desktop**: Experiência Windows 95 completa.
-    *   **Mobile**: Interface adaptada em lista vertical para usabilidade.
-
-## 🚀 Como Executar o Projeto
-
-### Pré-requisitos
+## How to Run the Project
+### Prerequisites
 *   Node.js (v18+)
-*   Conta no Firebase (Projeto criado)
-*   Wrangler (CLI da Cloudflare)
+*   Firebase Account (Created Project)
+*   Wrangler (Cloudflare CLI)
 
-### Instalação
-
-1.  Clone o repositório:
+### Installation
+1.  Clone the repository:
     ```bash
-    git clone https://github.com/seu-usuario/meu-portfolio.git
-    cd meu-portfolio
+    git clone https://github.com/your-username/my-portfolio.git
+    cd my-portfolio
     ```
 
-2.  Instale as dependências:
+2.  Install dependencies:
     ```bash
     npm install
     ```
 
-3.  Configure as Variáveis de Ambiente:
-    Crie um arquivo `.env` na raiz (baseado no `.env.example`):
+3.  Configure Environment Variables:
+    Create a `.env` file in the root (based on `.env.example`):
     ```env
     VITE_FIREBASE_API_KEY=...
     VITE_FIREBASE_AUTH_DOMAIN=...
@@ -85,25 +79,22 @@ O site que você sempre sonhou, agora pertinho de você.
     STEAM_ID=...
     ```
 
-4.  **Upload dos Dados (Essencial)**:
-    O projeto depende de dados hospedados no Firebase Storage.
-    *   Você deve ter a pasta `firebase_data` (gerada localmente ou fornecida).
-    *   Faça o upload de todo o conteúdo desta pasta para a **raiz** do seu bucket no Firebase Storage.
-    *   *Nota: Se os dados não estiverem lá, os apps (Instagram, Orkut, etc.) ficarão vazios.*
+4.  **Upload Data (Essential)**:
+    The project relies on data hosted on Firebase Storage.
+    *   You must have the `firebase_data` folder (generated locally or provided).
+    *   Upload the entire content of this folder to the **root** of your Firebase Storage bucket.
+    *   *Note: If the data is not there, the apps (Instagram, Orkut, etc.) will remain empty.*
 
-5.  Execute em desenvolvimento:
+5.  Run in development:
     ```bash
     npm run dev
     ```
 
-## 📦 Deploy (Cloudflare Pages)
-
-O projeto está configurado para deploy no **Cloudflare Pages**.
-
+## Deploy (Cloudflare Pages)
+The project is configured for deploy on **Cloudflare Pages**.
 *   **Build Command**: `npm run build`
 *   **Publish Directory**: `dist`
-*   **Deploy Command**: `npm run deploy` (Utiliza Wrangler para deploy da branch especificada)
-*   As funções serverless estão localizadas na pasta `functions/` e serão automaticamente detectadas pelo Cloudflare Pages.
+*   **Deploy Command**: `npm run deploy` (Uses Wrangler to deploy the specified branch)
+*   The serverless functions are located in the `functions/` folder and will be automatically detected by Cloudflare Pages.
 
----
-*Pensado por Matheus José da Silva - Guarapuava, 2026*
+*A product: matheusdanoite corp.*
